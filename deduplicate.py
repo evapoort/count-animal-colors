@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# jvparidon@gmail.com
+# jeroen.vanparidon@mpi.nl
 import os
 import lzma
 import argparse
@@ -11,6 +11,11 @@ logging.basicConfig(format='[{levelname}] {message}', style='{', level=logging.I
 
 
 def get_lines(fhandle):
+    """Removes duplicate lines from a file.
+
+    :param fhandle: file handle to get lines from
+    :returns: deduplicated lines, number of lines, number of duplicates removed
+    """
     lines = fhandle.read().split('\n')
     n_lines = len(lines)
     lines = set(lines)
@@ -20,6 +25,12 @@ def get_lines(fhandle):
 
 @log_timer
 def dedup_file(in_fname, out_fname):
+    """Deduplicates a file line-wise.
+
+    :param in_fname: file to deduplicate
+    :param out_fname: filename that deduplicated files will be written to
+    :returns: number of lines, number of duplicates removed
+    """
     with open(in_fname, 'r') as in_file, open(out_fname, 'w') as out_file:
         lines, n_lines, n_duplicates = get_lines(in_file)
         lines = list(lines)
@@ -35,6 +46,12 @@ def dedup_file(in_fname, out_fname):
 # unless your file fits into memory after deduplication (which includes randomization)
 @log_timer
 def big_dedup_file(in_fname, out_fname, n_bins):
+    """Method for line-wise deduplication of files too big to fit in memory.
+
+    :param in_fname: file to deduplicate
+    :param out_fname: filename that deduplicated files will be written to
+    :param n_bins: number of chunks to split big file into, more bins means less memory use
+    """
     filehandles = []
     for i in range(n_bins):
         filehandles.append(open(f'temp{i}.txt', 'w'))
@@ -53,16 +70,6 @@ def big_dedup_file(in_fname, out_fname, n_bins):
                 random.shuffle(lines)
                 out_file.write('\n'.join(lines))
     logging.info(f'pseudodeduplicated {in_fname}, {out_fname} is also pseudorandomized')
-
-
-def dedup_reddit(folder):
-    fnames = [os.path.join(folder, fname) for fname in sorted(list(os.listdir(folder))) if
-              fname.endswith('_stripped.txt')]
-    for fname in fnames:
-        with open(fname, 'rt') as in_file, open('{}.dedup.txt'.format(fname[:-4]), 'w') as out_file:
-            lines, n_lines, n_duplicates = get_lines(in_file)
-            out_file.write('\n'.join(lines))
-            logging.info(f'deduplicated {fname}, removed {n_duplicates} duplicates out of {n_lines} lines')
 
 
 if __name__ == '__main__':

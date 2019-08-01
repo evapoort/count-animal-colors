@@ -1,10 +1,18 @@
+# -*- coding: utf-8 -*-
+# jeroen.vanparidon@mpi.nl
 import pandas as pd
 import argparse
 from utensils import log_timer
 from collections import Counter
 
+
 def create_combos(words_fname):
-    words = pd.read_csv(words_fname, sep='\t')  # read in words
+    """Creates a list of possible animal/color phrases to search for.
+
+    :param words_fname: tab-separated file containing animals and colors to search for
+    :returns: phrases to search for, colors to search for, and animals to search for
+    """
+    words = pd.read_csv(words_fname, sep='\t')
     animals = list(words['animal'].dropna())
     colors = list(words['color'].dropna())
     search_combos = dict()
@@ -28,14 +36,30 @@ def create_combos(words_fname):
             search_combos[(color, animal)] = phrases
     return search_combos, colors, animals
 
+
 def pad(string):
+    """String magic.
+
+    Pads text string, replaces underscores with spaces
+    replaces British spelling of gray with American spelling.
+    This method generally makes the search phrases map correctly onto the corpus text.
+
+    :param string: text string
+    :returns: padded text string
+    """
     string = string.strip('\n').replace('_', ' ').replace('grey', 'gray')
     return f' {string} '
 
+
 @log_timer
 def count_corpus(corpus_fname, words_fname):
+    """Counts animal/color phrases in a text corpus.
+
+    :param corpus_fname: text file containing corpus to search
+    :param words_fname: tab-separated text file containing animals and words to search for
+    :returns: Counter object containing counts
+    """
     search_combos, colors, animals = create_combos(words_fname)  # get combos that we will be searching for
-    colors = colors
 
     combos = [f'{combo[0]} {combo[1]}' for combo in search_combos.keys()]
     combo_counts = Counter({x:0 for x in combos + animals + colors})  # start counter
@@ -68,13 +92,20 @@ def count_corpus(corpus_fname, words_fname):
 
     return combo_counts
 
+
 def counter_to_df(counter):
+    """Method for dumping Counter object to pandas DataFrame
+
+    :param counter: Counter object
+    :returns: pandas DataFrame containing counts
+    """
     df = pd.DataFrame.from_dict(counter, orient='index').reset_index().rename(columns={'index': 'combo', 0: 'count'})
     return df
 
+
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description='count animal-descriptor phrases in a corpus')
-    argparser.add_argument('corpus_fname')
+    argparser.add_argument('corpus_fname', help='text corpus to search')
     args = argparser.parse_args()
 
     words_fname = 'animals_colors.tsv'

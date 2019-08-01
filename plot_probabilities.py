@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# jeroen.vanparidon@mpi.nl
 import numpy as np
 import pandas as pd
 import argparse
@@ -11,6 +13,12 @@ font_size = 10 * font_scale
 sns.set(context='paper', style='whitegrid', palette='Set2', font_scale=font_scale)
 
 def plot_probabilities(df, label):
+    """Plotting method for conditional probabilities.
+
+    :param df: pandas DataFrame containing conditional probabilities to plot
+    :param label: type of adjective being plotted
+    :returns: seaborn plot
+    """
     g = sns.catplot(y='animal', x='conditional probability', hue='condition',
                     kind='bar', data=df,
                     height=len(df) / 12, aspect=1 / np.log10(len(df)))
@@ -36,7 +44,7 @@ def plot_probabilities(df, label):
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description='plot conditional probabilities from corpus analysis')
-    argparser.add_argument('results_fname')
+    argparser.add_argument('results_fname', help='results file to use for plotting')
     args = argparser.parse_args()
 
     df = pd.read_csv(args.results_fname, sep='\t')

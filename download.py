@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# jvparidon@gmail.com
+# jeroen.vanparidon@mpi.nl
 """Download datasets for training sub2vec models (not Windows-compatible)."""
 import subprocess
 import os

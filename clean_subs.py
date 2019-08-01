@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# jeroen.vanparidon@mpi.nl
 import os
 import zipfile
 import argparse
@@ -31,6 +33,11 @@ def strip_lemma(tree):
 
 
 def strip_txt(tree):
+    """XML stripper method for raw text.
+
+    :param tree: lxml parse tree
+    :returns: raw text
+    """
     # format [sentence]
     for node in tree.iter():
         if node.tag == 'meta':
@@ -53,6 +60,13 @@ def strip_viz(tree):
 
 
 def strip_xml(text, xmlparser, ioformat='txt'):
+    """Method for selecting xml stripper based on desired input/output format.
+
+    :param text: text to be stripped
+    :param xmlparser: lxml parser object
+    :param ioformat: desired input/output format
+    :returns: stripped text
+    """
     tree = etree.fromstring(text, xmlparser)
     if ioformat == 'upos':
         return strip_upos(tree)
@@ -66,6 +80,14 @@ def strip_xml(text, xmlparser, ioformat='txt'):
 
 @log_timer
 def strip_archive(lang, ioformat='txt', years=(1900, 2050)):
+    """Method for xml-stripping an OpenSubtitles archive in zip format.
+
+    Writes the xml-stripped archive directly to a zip format file.
+
+    :param lang: archive language
+    :param ioformat: desired input/output format
+    :param years: specific years to include in the output
+    """
     read_zip = zipfile.ZipFile(f'corpora/{lang}.zip', 'r')
     write_zip = zipfile.ZipFile(f'corpora/{lang}_stripped.zip', 'a')
     if ioformat == 'txt':
@@ -87,19 +109,12 @@ def strip_archive(lang, ioformat='txt', years=(1900, 2050)):
 
 
 def strip_punctuation(txt, ioformat='txt'):
-    '''
-    regeces = [
-        (r'<.*?>', ''),  # strip other xml tags
-        (r'http.*?(?:[\s\n\]]|$)', ''),  # strip links
-        (r'([^\s]{2})[\.\?\!]+', '\\1\n'),  # line breaks at sentence ends, but not single initials
-        (r'[-–]', '-'),  # replace different types of dash with hyphen
-        (r'[—/]', ' '),  # replace ellipses and slashes with spaces
-        (r'-\s', ' '),  # strip hyphens outside of compounds
-        (r'\n-', '\n'),  # strip hyphens at sentence starts
-        (r' {2,}', ' '),  # strip excessive spaces
-        (r'\s*\n\s*', '\n'),  # strip empty lines
-    ]
-    '''
+    """Method for stripping punctuation from a text corpus.
+
+    :param txt: text to be stripped of punctuation
+    :param ioformat: desired input/output format
+    :returns: punctuation-stripped text
+    """
     regeces = [
         (r'<.*?>', ''),  # strip other xml tags
         (r'http.*?(?:[\s\n\]]|$)', ''),  # strip links
@@ -123,6 +138,16 @@ def strip_punctuation(txt, ioformat='txt'):
 
 @log_timer
 def join_archive(lang, ioformat='txt', years=(1900, 2050), verbose=False):
+    """Method for joining an OpenSubtitles archive into a single large txt file.
+
+    Writes joined corpus directly to a txt file.
+    
+    :param lang: corpus language
+    :param ioformat: desired input/output format
+    :param years: specific years to include in the output
+    :param verbose: print progress bar or not
+    :returns: number of subtitle files in corpus
+    """
     read_zip = zipfile.ZipFile(f'corpora/{lang}_stripped.zip', 'r')
     out_fname = f'corpora/sub.{lang}.{ioformat}'
     if ioformat == 'txt':
@@ -152,11 +177,10 @@ def join_archive(lang, ioformat='txt', years=(1900, 2050), verbose=False):
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description='clean subtitles for training distributional semantics models')
     argparser.add_argument('lang', help='language to clean')
-    argparser.add_argument('--stripxml', action='store_true')
-    argparser.add_argument('--years', default=(1900, 2050), nargs=2, type=int)
-    argparser.add_argument('--join', action='store_true')
-    argparser.add_argument('--ioformat', default='txt', choices=['txt', 'lemma', 'upos', 'viz'],
-                           help='input/output format')
+    argparser.add_argument('--stripxml', action='store_true', help='strip xml from subtitle files')
+    argparser.add_argument('--years', default=(1900, 2050), nargs=2, type=int, help='years of subtitles to include')
+    argparser.add_argument('--join', action='store_true', help='join subtitles into one large txt file')
+    argparser.add_argument('--ioformat', default='txt', choices=['txt', 'lemma', 'upos', 'viz'], help='input/output format')
     args = argparser.parse_args()
 
     if args.stripxml:

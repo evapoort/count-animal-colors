@@ -1,8 +1,23 @@
+# -*- coding: utf-8 -*-
+# jeroen.vanparidon@mpi.nl
 import numpy as np
 import pandas as pd
 import argparse
+from utensils import log_timer
 
+
+@log_timer
 def analyze_combos(combos_fname, words_fname, canonical_fname):
+    """Analyze animal/color counts files.
+
+    Adds boolean variables for type of entry (noun, adjective, or combination)
+    and computes forward and backward transitional probabilities.
+
+    :param combos_fname: pandas DataFrame containing counts
+    :param words_fname: pandas DataFrame containing all animals and colors
+    :param canonical_fname: pandas DataFrame containing typical color for each animal
+    :returns: pandas DataFrame containing results
+    """
     words = pd.read_csv(words_fname, sep='\t')  # read in words
     combos = pd.read_csv(combos_fname, sep='\t')  # read in combo counts
     canonical = pd.read_csv(canonical_fname, sep='\t')  # read in the canonical combinations
@@ -40,9 +55,10 @@ def analyze_combos(combos_fname, words_fname, canonical_fname):
 
     return combos
 
+
 if __name__ == '__main__':
-    argparser = argparse.ArgumentParser(description='analyze animal/color phrase counts')
-    argparser.add_argument('counts_fname')
+    argparser = argparse.ArgumentParser(description='analyze animal/color phrase counts and compute conditional probabilities')
+    argparser.add_argument('counts_fname', help='tab separated file containing counts')
     args = argparser.parse_args()
 
     words_fname = 'animals_colors.tsv'
