@@ -1,4 +1,6 @@
-# Blind acquisition of animal colors, a corpus study
+# Don’t believe everything you hear! Sighted people’s language is not helpful for blind individuals’ acquisition of typical animal colors
+## Code and corpus repository
+The analysis in the letter to the editor is based on the OpenSubtitles corpus, a crowdsourced database of film and television subtitles that represents the --to our knowledge-- largest publically available corpus of transcriptions of pseudoconversational speech. To compute conditional probabilities (i.e., the chance that a given animal will be described as having a particular color), we first count the relevant colors, animals, and animal/color phrases in the corpus. Then, for each animal and color, we divide the number of animal/color occurrences by the number of animal occurrences. The conditional probabilities for the typical color of each animal, and the most common (other) color for each animal is then plotted (you can find the plot in `conditional_probabilities_color.pdf`).  
 To replicate the full analysis in the commentary, run the steps in this manual sequentially. Please note that some of the steps are prohibitively memory- or compute-intensive if you execute them on a the average desktop computer. If you just want to play around with the phrase counts and conditional probabilities, skip points 1, 2, and 3, and start with 4 (_Tallying color/animal phrases_) and the files produced in that section.
 
 ## Downloading the OpenSubtitles corpus
