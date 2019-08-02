@@ -4,8 +4,8 @@ The analysis in the letter to the editor is based on the OpenSubtitles corpus, a
 To replicate the full analysis in the commentary, run the steps in this manual sequentially. Please note that some of the steps are prohibitively memory- or compute-intensive if you execute them on a the average desktop computer. If you just want to play around with the phrase counts and conditional probabilities, skip points 1, 2, and 3, and start with 4 (_Tallying color/animal phrases_) and the files produced in that section.
 
 ### Downloading the OpenSubtitles corpus
-1. `python download.py en sub` to download the OpenSubtitles corpus in English from OPUS, the Open Parallel Corpus.
-Use other two letter ISO language codes to get other languages (e.g., `de` for German, `fr` for French). Use `wiki` instead of `sub` to download Wikipedia corpora. (Caution: the OpenSubtitles corpus is approximately 50GB.)
+1. `python download.py en sub` to download the OpenSubtitles corpus in English from OPUS, the Open Parallel Corpus. Use other two letter ISO language codes to get other languages (e.g., `de` for German, `fr` for French). Use `wiki` instead of `sub` to download Wikipedia corpora. (Caution: the OpenSubtitles corpus is approximately 50GB.)  
+This tool relies on curl, a linux/OSX utility that may not be installed on Windows systems. If you need to download the corpora manually, you can access them through http://opus.nlpl.eu/OpenSubtitles-v2018.php
 
 ### Cleaning and deduplicating the OpenSubtitles corpus
 2. `python clean_subs.py en --stripxml --join` to clean xml tags out of the corpus and join the individual subtitle files into one large txt file. This is a compute-heavy operation, it could take a long time to run.
@@ -19,4 +19,4 @@ Use other two letter ISO language codes to get other languages (e.g., `de` for G
 6. `python plot_probabilities.py dedup.sub.en.results.tsv` to create a plot of the conditional probabilities. The plot will be named `conditional_probabilities_color.pdf` by default.
 
 ### Dependencies
-The scripts included in this repository have only been tested with Python 3, and have a number of external dependencies (numpy, pandas, matplotlib, seaborn, lxml). The latest versions of the dependencies are all available for installation through pip.
+The scripts included in this repository will only work with Python 3.6 (or newer), and have a number of external dependencies (numpy, pandas, matplotlib, seaborn, lxml). The latest versions of the dependencies are all available for installation through pip.
